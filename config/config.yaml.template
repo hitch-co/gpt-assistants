@@ -1,6 +1,6 @@
 #CONFIG
 env_filename: 'your_env_file_name.env'
-env_dirname: 'abs/dirpath/to/env/file'
+env_dirname: 'rel/dirpath/to/env/file'
 
 openai-api:
   assistant_type: "code_interpreter" #see documentation for other types
