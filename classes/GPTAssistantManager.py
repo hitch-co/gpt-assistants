@@ -40,17 +40,24 @@ class GPTAssistantManager:
         self.gpt_client = gpt_client
         return gpt_client
 
-    def create_gpt_assistant(self, 
+    def _create_gpt_assistant(self, 
                              assistant_name, 
                              assistant_instructions,
-                             assistant_type="code_interpreter",
-                             assistant_model="gpt-4-1106-preview"
+                             assistant_type=None,
+                             assistant_model=None
                              ):
+            
+        # Check if args provided and if not, fall back to instance defaults
+        if assistant_type is None:
+            assistant_type = self.assistant_type
+        if assistant_model is None:
+            assistant_model = self.assistant_model
+
         assistant = self.gpt_client.beta.assistants.create(
             name=assistant_name,
             instructions=assistant_instructions,
-            tools=[{"type": assistant_type}],
-            model=assistant_model
+            tools=[{"type": self.assistant_type}],
+            model=self.assistant_model
         )
         self.assistant = assistant
         return assistant
