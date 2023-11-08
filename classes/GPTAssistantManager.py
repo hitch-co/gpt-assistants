@@ -2,16 +2,39 @@ import openai
 import os 
 
 from my_modules import config
+from my_modules.my_logging import my_logger
+
+root_logger = my_logger(dirname='log', 
+                        logger_level='INFO',
+                        logger_name='root_GPTAssistantManager',
+                        stream_logs=False
+                        )
 
 class GPTAssistantManager:
     def __init__(self) -> None:
-        config.load_env()
-        self.yaml_data = config.load_yaml()
+        """
+        Initializes the GPTAssistantManager instance.
+        
+        The instance uses a dedicated logger and loads configuration from environment variables
+        and a YAML file. It sets up the assistant type and model based on the YAML configuration 
+        by default, but these can be overridden during the assistant workflow initialization.
+        """
+        self.logger = my_logger(
+            debug_level='INFO', 
+            logger_name='logger_GPTAssistantManager', 
+            mode='w', 
+            stream_logs=True
+            )
+        
+        self.lock = asyncio.Lock() # Lock for async operations
 
-        #Set credential
+        config.load_env() # Load environment variables
         openai.api_key = os.getenv('OPENAI_API_KEY')
         
-    def create_gpt_client(self):
+        self.yaml_data = config.load_yaml() # Load assistant configuration from a YAML file
+        self.assistant_type=self.yaml_data['openai-api']['assistant_type']
+        self.assistant_model=self.yaml_data['openai-api']['assistant_model']
+        
         #Create client
         gpt_client = openai.OpenAI()       
         self.gpt_client = gpt_client
